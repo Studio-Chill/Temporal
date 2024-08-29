@@ -1,0 +1,149 @@
+[gd_scene load_steps=15 format=3 uid="uid://bm0q48xr8jtst"]
+
+[ext_resource type="Texture2D" uid="uid://ch83h580qax60" path="res://Resources/Enemies/Bat/bat.png" id="1_faktk"]
+[ext_resource type="Script" path="res://ClassTemplates/EnemyTemplates/EnemyHealthTemplates/enemy_hitbox_templatex.gd" id="2_5krvc"]
+[ext_resource type="Script" path="res://ClassTemplates/EnemyTemplates/EnemyHealthTemplates/enemy_health_template.gd" id="2_x3pu7"]
+[ext_resource type="Script" path="res://Enemies/Bat/bat_moving.gd" id="3_6dmou"]
+[ext_resource type="Script" path="res://Enemies/Bat/bat_stationary.gd" id="3_q5up5"]
+[ext_resource type="Script" path="res://Enemies/Bat/bat_pursue.gd" id="4_h3wex"]
+[ext_resource type="Script" path="res://addons/random_timer/random_timer.gd" id="4_t2nfy"]
+[ext_resource type="Script" path="res://Enemies/Bat/bat_state_machine.gd" id="5_odr76"]
+[ext_resource type="Script" path="res://ClassTemplates/EnemyTemplates/StateMachineTemplate/stunned_state_template.gd" id="9_wgm18"]
+[ext_resource type="PackedScene" uid="uid://coygjtloniwx1" path="res://ClassTemplates/EnemyTemplates/EnemyHealthBar/health_bar.tscn" id="10_xduyp"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lpxhu"]
+radius = 9.0
+height = 32.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_eioxy"]
+size = Vector2(6, 13)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w6gp8"]
+size = Vector2(27, 6)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ctivd"]
+radius = 118.004
+
+[node name="Bat" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 36
+
+[node name="HealthComponent" type="Node2D" parent="." node_paths=PackedStringArray("enemy", "health_bar", "hitbox")]
+script = ExtResource("2_x3pu7")
+enemy = NodePath("..")
+enemy_health = 100.0
+stun_capacity = 10000
+health_bar = NodePath("../HealthBar")
+hitbox = NodePath("../Hitbox")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("2_5krvc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(-1, -1)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_lpxhu")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_faktk")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+debug_enabled = true
+
+[node name="DetectionAreas" type="Node2D" parent="."]
+
+[node name="DetectionAreaV" type="Area2D" parent="DetectionAreas"]
+visible = false
+collision_layer = 16
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionAreas/DetectionAreaV"]
+position = Vector2(1, -0.5)
+shape = SubResource("RectangleShape2D_eioxy")
+
+[node name="DetectionAreaH" type="Area2D" parent="DetectionAreas"]
+visible = false
+position = Vector2(2.08165e-12, 2.08165e-12)
+rotation = 3.14159
+collision_layer = 16
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionAreas/DetectionAreaH"]
+position = Vector2(1.5, 0)
+shape = SubResource("RectangleShape2D_w6gp8")
+
+[node name="PursueArea" type="Area2D" parent="DetectionAreas"]
+visible = false
+collision_layer = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionAreas/PursueArea"]
+shape = SubResource("CircleShape2D_ctivd")
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state", "health_component", "stunned_state")]
+script = ExtResource("5_odr76")
+initial_state = NodePath("Stationary")
+health_component = NodePath("../HealthComponent")
+stunned_state = NodePath("Stunned")
+
+[node name="Stationary" type="Node" parent="StateMachine" node_paths=PackedStringArray("state_machine", "pursue_state", "bat", "stationary_time")]
+script = ExtResource("3_q5up5")
+state_machine = NodePath("..")
+pursue_state = NodePath("../Pursue")
+bat = NodePath("../..")
+stationary_time = NodePath("StationaryTimer")
+
+[node name="StationaryTimer" type="Timer" parent="StateMachine/Stationary"]
+one_shot = true
+script = ExtResource("4_t2nfy")
+
+[node name="Moving" type="Node" parent="StateMachine" node_paths=PackedStringArray("enemy", "enemy_sprite", "detection_area_horizontal", "moving_timer", "state_machine", "pursue_state")]
+script = ExtResource("3_6dmou")
+enemy = NodePath("../..")
+enemy_sprite = NodePath("../../Sprite2D")
+detection_area_horizontal = NodePath("../../DetectionAreas/DetectionAreaH")
+moving_timer = NodePath("MovingTimer")
+state_machine = NodePath("..")
+pursue_state = NodePath("../Pursue")
+movement_speed = 100
+
+[node name="MovingTimer" type="Timer" parent="StateMachine/Moving"]
+one_shot = true
+script = ExtResource("4_t2nfy")
+min_wait_time = 3.0
+max_wait_time = 4.0
+
+[node name="Pursue" type="Node" parent="StateMachine" node_paths=PackedStringArray("enemy", "enemy_sprite", "navigation_agent_2d")]
+script = ExtResource("4_h3wex")
+enemy = NodePath("../..")
+enemy_sprite = NodePath("../../Sprite2D")
+movement_speed = 100
+navigation_agent_2d = NodePath("../../NavigationAgent2D")
+steer_force = 0.02
+
+[node name="Stunned" type="Node" parent="StateMachine" node_paths=PackedStringArray("enemy", "stunned_time")]
+script = ExtResource("9_wgm18")
+enemy = NodePath("../..")
+stunned_time = NodePath("Timer")
+
+[node name="Timer" type="Timer" parent="StateMachine/Stunned"]
+wait_time = 1.5
+one_shot = true
+
+[node name="HealthBar" parent="." instance=ExtResource("10_xduyp")]
+offset_left = -15.0
+offset_top = 10.0
+offset_right = 15.0
+offset_bottom = 13.0
+
+[connection signal="area_entered" from="Hitbox" to="Hitbox" method="_on_area_entered"]
+[connection signal="body_entered" from="Hitbox" to="StateMachine" method="_on_hitbox_body_entered"]
+[connection signal="enemy_hit" from="Hitbox" to="HealthComponent" method="_on_hitbox_enemy_hit"]
+[connection signal="body_entered" from="DetectionAreas/DetectionAreaV" to="StateMachine/Moving" method="_on_detection_area_v_body_entered"]
+[connection signal="body_entered" from="DetectionAreas/DetectionAreaH" to="StateMachine/Moving" method="_on_detection_area_h_body_entered"]
+[connection signal="body_entered" from="DetectionAreas/PursueArea" to="StateMachine/Stationary" method="_on_pursue_area_body_entered"]
+[connection signal="body_entered" from="DetectionAreas/PursueArea" to="StateMachine/Moving" method="_on_pursue_area_body_entered"]
+[connection signal="timeout" from="StateMachine/Stationary/StationaryTimer" to="StateMachine/Stationary" method="_on_stationary_timer_timeout"]
+[connection signal="timeout" from="StateMachine/Moving/MovingTimer" to="StateMachine/Moving" method="_on_moving_timer_timeout"]
+[connection signal="timeout" from="StateMachine/Stunned/Timer" to="StateMachine/Stunned" method="_on_timer_timeout"]
