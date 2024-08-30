@@ -1,0 +1,95 @@
+[gd_scene load_steps=7 format=3 uid="uid://devll3mb8aelr"]
+
+[ext_resource type="Script" path="res://ClassTemplates/WeaponTemplates/MeleeTemplates/melee_weapon_template.gd" id="1_e0eih"]
+[ext_resource type="Script" path="res://Weapons/Knight_Sword/sword_component.gd" id="2_iy2ih"]
+[ext_resource type="Texture2D" uid="uid://l21r8sbgfsh0" path="res://Resources/Weapons/KnightSword/Knight_Sword-Sheet.png" id="2_ry1ba"]
+
+[sub_resource type="Animation" id="Animation_f41b4"]
+length = 0.001
+
+[sub_resource type="Animation" id="Animation_s6rcu"]
+resource_name = "Swing"
+length = 1.00001
+step = 0.111111
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.111111, 0.222222, 0.333333, 0.444444, 0.555556, 0.666667, 0.777778, 0.888889),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sword_Component/Swing1/CollisionPolygon2D:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.333333, 0.555556),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sword_Component/Swing2/CollisionPolygon2D:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.666667, 0.888889),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_iabdk"]
+_data = {
+"RESET": SubResource("Animation_f41b4"),
+"Swing": SubResource("Animation_s6rcu")
+}
+
+[node name="KnightSword" type="Node2D" node_paths=PackedStringArray("weapon_sprite", "animation_player")]
+script = ExtResource("1_e0eih")
+weapon_sprite = NodePath("Sprite2D")
+animation_player = NodePath("AnimationPlayer")
+
+[node name="Sword_Component" type="Node2D" parent="."]
+script = ExtResource("2_iy2ih")
+damage = 10.0
+knockback = 500.0
+stun = 10
+
+[node name="Swing1" type="Area2D" parent="Sword_Component"]
+visible = false
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Sword_Component/Swing1"]
+polygon = PackedVector2Array(0, -40, 52, -34, 80, -20, 89, -2, 86, 9, 73, 24, 57, 31, 39, 36, 2, 35, -4, 29, -5, -35)
+disabled = true
+
+[node name="Swing2" type="Area2D" parent="Sword_Component"]
+visible = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Sword_Component/Swing2"]
+polygon = PackedVector2Array(5, -41, 43, -38, 74, -24, 87, -6, 87, 4, 80, 13, 64, 21, 49, 24, 19, 24, 4, 18, 2, -38)
+disabled = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(40, 0)
+texture = ExtResource("2_ry1ba")
+hframes = 8
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_iabdk")
+}
+
+[connection signal="area_entered" from="Sword_Component/Swing1" to="Sword_Component" method="_on_swing_area_entered"]
+[connection signal="area_entered" from="Sword_Component/Swing2" to="Sword_Component" method="_on_swing_2_area_entered"]

@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://bj7cmukca7iwj"]
+
+[ext_resource type="Script" path="res://ClassTemplates/WeaponTemplates/weapon_dropped.gd" id="1_l1w7q"]
+[ext_resource type="Texture2D" uid="uid://ui4nxiyak8vy" path="res://Resources/Weapons/BasicShotgun/BasicShotgun.png" id="1_s0qtc"]
+[ext_resource type="Texture2D" uid="uid://b1mlt86id7y37" path="res://Resources/Weapons/BasicShotgun/BasicShotgunDropped.png" id="2_1sqet"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gqtpq"]
+size = Vector2(136, 34)
+
+[node name="BasicShogunDropped" type="Area2D" node_paths=PackedStringArray("uninteracted_sprite", "interacted_sprite")]
+collision_layer = 128
+collision_mask = 33
+script = ExtResource("1_l1w7q")
+uninteracted_sprite = NodePath("Sprite2D")
+interacted_sprite = NodePath("Sprite2D2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_s0qtc")
+region_enabled = true
+region_rect = Rect2(0, 0, 48.9879, 32)
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+texture = ExtResource("2_1sqet")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(2, 5)
+shape = SubResource("RectangleShape2D_gqtpq")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.3
+one_shot = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

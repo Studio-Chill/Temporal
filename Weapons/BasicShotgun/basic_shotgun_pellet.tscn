@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://dnvdj56jt41i"]
+
+[ext_resource type="Script" path="res://Weapons/BasicShotgun/basic_shotgun_pellet.gd" id="1_k7tbu"]
+[ext_resource type="Texture2D" uid="uid://ui4nxiyak8vy" path="res://Resources/Weapons/BasicShotgun/BasicShotgun.png" id="2_yqh3y"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0p8f0"]
+size = Vector2(12, 7)
+
+[node name="BasicShotgunPellet" type="Area2D"]
+script = ExtResource("1_k7tbu")
+random_angle = 20
+standard_deviation = 0.3
+bullet_speed = 500
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_yqh3y")
+region_enabled = true
+region_rect = Rect2(48.1708, 0, 31.8292, 32)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_0p8f0")

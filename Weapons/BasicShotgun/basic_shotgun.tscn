@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://c6rwtikt8772h"]
+
+[ext_resource type="Script" path="res://Weapons/BasicShotgun/basic_shotgun.gd" id="1_uy2je"]
+[ext_resource type="Texture2D" uid="uid://ui4nxiyak8vy" path="res://Resources/Weapons/BasicShotgun/BasicShotgun.png" id="2_kk5a8"]
+
+[node name="BasicShotgun" type="Node2D" node_paths=PackedStringArray("spawn_position", "bullet_cooldown", "weapon_sprite")]
+script = ExtResource("1_uy2je")
+spawn_position = NodePath("Marker2D")
+bullet_cooldown = NodePath("Timer")
+weapon_sprite = NodePath("Sprite2D")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_kk5a8")
+region_enabled = true
+region_rect = Rect2(0, 0, 47.3937, 32)
+
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(21, -1)
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 1.5
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

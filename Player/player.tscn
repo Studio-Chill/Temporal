@@ -1,0 +1,56 @@
+[gd_scene load_steps=9 format=3 uid="uid://d1rcvwymfwqrg"]
+
+[ext_resource type="Script" path="res://Player/player.gd" id="1_23u7b"]
+[ext_resource type="Texture2D" uid="uid://dq8rc460bce0q" path="res://Resources/PlayerSprites/Knight/Knight.png" id="2_7ptuy"]
+[ext_resource type="PackedScene" uid="uid://st1cfwdxk5my" path="res://Weapons/Knight_Crossbow/knight_crossbow.tscn" id="3_0ne06"]
+[ext_resource type="Script" path="res://ClassTemplates/PlayerTemplates/weapons_manager_template.gd" id="3_3j1s1"]
+[ext_resource type="PackedScene" uid="uid://devll3mb8aelr" path="res://Weapons/Knight_Sword/knight_sword.tscn" id="4_b5q8a"]
+[ext_resource type="PackedScene" uid="uid://c6rwtikt8772h" path="res://Weapons/BasicShotgun/basic_shotgun.tscn" id="4_x4oau"]
+[ext_resource type="PackedScene" uid="uid://da7ljdyxx2hc2" path="res://ClassTemplates/PlayerTemplates/PlayerHealthBar/player_health_bar_template.tscn" id="6_g5srd"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yik6a"]
+height = 42.0
+
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("player_healthbar") groups=["Player"]]
+collision_mask = 240
+script = ExtResource("1_23u7b")
+player_health = 100
+player_healthbar = NodePath("PlayerHealthBar")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_7ptuy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1, 0)
+shape = SubResource("CapsuleShape2D_yik6a")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(3, 3)
+
+[node name="WeaponsManager" type="Node2D" parent="."]
+script = ExtResource("3_3j1s1")
+
+[node name="BasicShotgun" parent="WeaponsManager" node_paths=PackedStringArray("player") instance=ExtResource("4_x4oau")]
+player = NodePath("../..")
+
+[node name="KnightCrossbow" parent="WeaponsManager" node_paths=PackedStringArray("player") instance=ExtResource("3_0ne06")]
+position = Vector2(5, 6)
+player = NodePath("../..")
+
+[node name="KnightSword" parent="WeaponsManager" node_paths=PackedStringArray("player") instance=ExtResource("4_b5q8a")]
+position = Vector2(-7, 9)
+player = NodePath("../..")
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="RollCooldown" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="RollTimer" type="Timer" parent="Timers"]
+wait_time = 0.2
+one_shot = true
+
+[node name="PlayerHealthBar" parent="." instance=ExtResource("6_g5srd")]
+
+[connection signal="timeout" from="Timers/RollCooldown" to="." method="_on_roll_cooldown_timeout"]
+[connection signal="timeout" from="Timers/RollTimer" to="." method="_on_roll_timer_timeout"]

@@ -1,0 +1,54 @@
+[gd_scene load_steps=5 format=3 uid="uid://da7ljdyxx2hc2"]
+
+[ext_resource type="Script" path="res://ClassTemplates/PlayerTemplates/PlayerHealthBar/player_health_bar_canvas.gd" id="1_227jo"]
+[ext_resource type="Script" path="res://ClassTemplates/PlayerTemplates/PlayerHealthBar/health_bar.gd" id="1_su07g"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4ea0d"]
+bg_color = Color(0.184314, 0.184314, 0.184314, 1)
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+shadow_color = Color(0, 0, 0, 0.27451)
+shadow_offset = Vector2(2.08165e-12, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_42hhr"]
+bg_color = Color(0.2, 0.701961, 0.529412, 1)
+
+[node name="PlayerHealthBar" type="CanvasLayer"]
+script = ExtResource("1_227jo")
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+z_index = -1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = -37.0
+offset_right = 250.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/background = SubResource("StyleBoxFlat_4ea0d")
+theme_override_styles/fill = SubResource("StyleBoxFlat_42hhr")
+value = 60.0
+show_percentage = false
+script = ExtResource("1_su07g")
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -26.0
+offset_top = -23.0
+offset_right = 26.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "60/100
+"
+
+[connection signal="damage_player" from="." to="HealthBar" method="_on_player_health_bar_damage_player"]
+[connection signal="initalize_health" from="." to="HealthBar" method="_on_player_health_bar_initalize_health"]
